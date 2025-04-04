@@ -5,24 +5,6 @@
 #include <stdlib.h>
 
 
-_Bool is_solved(struct game_state state) {
-    int correct_value = 1;
-    
-    for (int row = 0; row < 4; row++) {
-        for (int col = 0; col < 4; col++) {
-            if (row == 3 && col == 3) {
-                // The last tile should be 0 (empty space)
-                return state.tiles[row][col] == 0;
-            }
-            if (state.tiles[row][col] != correct_value) {
-                return false;
-            }
-            correct_value++;
-        }
-    }
-    return true;
-}
-
 int *get_compressed(int *written, int max) {
   int *compressed = calloc(max, sizeof(int));
   int value = 0;

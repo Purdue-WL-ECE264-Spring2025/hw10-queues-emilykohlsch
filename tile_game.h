@@ -9,7 +9,6 @@ struct game_state {
   uint16_t num_steps;
 };
 
-_Bool is_solved(struct game_state state);
 
 uint64_t serialize(struct game_state state);
 struct game_state deserialize(uint64_t state);
