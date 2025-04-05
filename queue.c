@@ -24,48 +24,61 @@ int is_solved(struct game_state state) {
 }
 
 struct game_state dequeue(struct queue *q) { 
-   size_t encoded = remove_from_head(&q->data);  // uses linked_list function
-   return deserialize(encoded);
+   if (!q->data.head) {
+        fprintf(stderr, "Error: dequeue from empty queue\n");
+        exit(1);
+    }
+
+    size_t serialized = remove_from_head(&q->data);
+    return deserialize(serialized);
 }
 
 int number_of_moves(struct game_state start) { 
    struct queue q = {0};
    enqueue(&q, start);   
    
+   size_t seen[100000];
+   int seen_count = 0;
+
    while (q.data.head) {   
         struct game_state current = dequeue(&q); 
         
-        if (is_solved(current)) { 
-            return current.num_steps;  
+        size_t hash = serialize(current);
+        int skip = 0;
+        for (int i = 0; i < seen_count; i++) {
+            if (seen[i] == hash) {
+                skip = 1;
+                break;
+            }
         }
+        if (skip) continue;
+        seen[seen_count++] = hash;
 
-        struct game_state new_state = current;  
+        if (is_solved(current)) return current.num_steps;
 
-       
-        if (current.empty_row < 3) {
-            new_state = current;
-            move_up(&new_state);  
-            enqueue(&q, new_state);  
-        }
+        struct game_state next;
 
         if (current.empty_row > 0) {
-            new_state = current;
-            move_down(&new_state);  
-            enqueue(&q, new_state);  
+            next = current;
+            move_down(&next);
+            enqueue(&q, next);
         }
-
-        if (current.empty_col < 3) {
-            new_state = current;
-            move_left(&new_state);
-            enqueue(&q, new_state);  
+        if (current.empty_row < 3) {
+            next = current;
+            move_up(&next);
+            enqueue(&q, next);
         }
-
         if (current.empty_col > 0) {
-            new_state = current;
-            move_right(&new_state);
-            enqueue(&q, new_state); 
+            next = current;
+            move_right(&next);
+            enqueue(&q, next);
+        }
+        if (current.empty_col < 3) {
+            next = current;
+            move_left(&next);
+            enqueue(&q, next);
         }
     }
-    
+
     return -1;
 }
