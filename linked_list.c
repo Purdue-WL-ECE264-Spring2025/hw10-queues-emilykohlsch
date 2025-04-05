@@ -1,14 +1,21 @@
 #include "linked_list.h"
 
+#include "tile_game.h"
 #include <stdlib.h>
+#include <stdint.h>
 
-struct list_node *new_node(size_t value) { 
-   struct list_node *node = malloc(sizeof(struct list_node));
-   if (!node) return NULL; 
-   node->value = value;
-   node->next = NULL;
-   return node;
+
+struct list_node *new_node(size_t value) {
+    struct list_node *node = malloc(sizeof(struct list_node));
+    if (node == NULL) {
+        exit(1); 
+    }
+    node->value = value;  // Directly use size_t value
+    node->next = NULL;
+    return node;
 }
+
+
 
 void insert_at_head(struct linked_list *list, size_t value) {
   struct list_node *node = new_node(value);
