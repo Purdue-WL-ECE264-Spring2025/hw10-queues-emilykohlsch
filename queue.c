@@ -62,7 +62,11 @@ int number_of_moves(struct game_state start) {
             return -1;
         }
 
-        if (is_solved(current)) return current.num_steps;
+        if (is_solved(current)) {
+            free_list(q.data);
+            return current.num_steps;
+        }
+
 
         struct game_state next;
 
