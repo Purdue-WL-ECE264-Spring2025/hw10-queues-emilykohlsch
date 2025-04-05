@@ -87,6 +87,6 @@ int number_of_moves(struct game_state start) {
             enqueue(&q, next);
         }
     }
-
+    free_list(q.data);
     return -1;
 }
