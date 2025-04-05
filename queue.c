@@ -1,7 +1,7 @@
 #include "queue.h"
 #include "tile_game.h"
 #include <stdlib.h>
-
+#define MAX_SEEN 100000
 
 void enqueue(struct queue *q, struct game_state state) {
   size_t encoded = serialize(state);
@@ -37,13 +37,14 @@ int number_of_moves(struct game_state start) {
    struct queue q = {0};
    enqueue(&q, start);   
    
-   size_t seen[100000];
+   size_t seen[MAX_SEEN];
    int seen_count = 0;
 
    while (q.data.head) {   
         struct game_state current = dequeue(&q); 
         
         size_t hash = serialize(current);
+
         int skip = 0;
         for (int i = 0; i < seen_count; i++) {
             if (seen[i] == hash) {
@@ -51,8 +52,15 @@ int number_of_moves(struct game_state start) {
                 break;
             }
         }
+
         if (skip) continue;
-        seen[seen_count++] = hash;
+
+        if (seen_count < MAX_SEEN) {
+            seen[seen_count++] = hash;
+        } else {
+            fprintf(stderr, "Exceeded max seen states — aborting.\n");
+            return -1;
+        }
 
         if (is_solved(current)) return current.num_steps;
 
